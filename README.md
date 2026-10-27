@@ -1,45 +1,60 @@
-# Company-event-organizer-
-Seng2000, project 1, designed using queue/LinkedList and a HashMap
-## Project Configuration
+# Company Event Organizer
 
-### **Programming Language**
-- **Java**
-- **javascript**
-- **Version:** Java 17 or newer, ES2026
+A company event planner with a Java Spring Boot REST API and a Vite JavaScript
+frontend. The public page lists events, and the separate admin page can create
+and remove events through the shared API.
 
-### **IDE**
-- **Visual Studio Code**
+## Requirements
 
-### **Data Structures**
-- Custom **Linked List**
-- **Queue**
-- **HashMap**
+- JDK 25
+- Node.js and npm
 
-### **Libraries**
-- Java Standard Library
-- react
+## Run locally
 
-### **framework**
--springboot
+Start the backend in one terminal:
 
-### **Version Control**
-- **GitHub**
+```powershell
+cd backend/Java.backend
+.\gradlew.bat bootRun
+```
 
-### **Compiler**
-- Visual Studio Code (built‑in Java extensions)
+Start the frontend in a second terminal:
 
-### **Testing**
-- **JUnit** for:
-  - Queue operations
-  - Simulation results
-  - ui integration
+```powershell
+cd "frontend/Event organizer"
+npm install
+npm run dev
+```
 
-### **Benchmarking**
-- `System.nanoTime()` for execution‑time measurement
+Open the Vite URL shown in the terminal (usually `http://localhost:5173`).
+The public events page is at `/`, and event management is at `/admin.html`.
+The frontend calls `http://localhost:8080/api/events` by default. Set
+`VITE_API_URL` in a frontend `.env` file to use a different API URL.
 
-### **Visualization**
-  - People entering the queue
-  - People leaving the queue
-  - Events entering the queue
-  - Events leaving the queue
-  - ui developed in JavaScript and connected to Java with api calls
+## Events API
+
+- `GET /api/events` lists events.
+- `POST /api/events` creates an event with a required `name` and an optional
+  `description`. Dates and locations are not collected. The backend assigns
+  an ID and queue timestamp.
+- `DELETE /api/events/{id}` removes an event.
+
+Events are held in an in-memory FIFO queue and returned in submission order.
+The queue is cleared when the backend restarts. The legacy `Event.java` source
+is excluded from compilation; event API objects use `EventRecord` instead.
+
+## Tests
+
+Run backend tests with:
+
+```powershell
+cd backend/Java.backend
+.\gradlew.bat test
+```
+
+Build the frontend with:
+
+```powershell
+cd "frontend/Event organizer"
+npm run build
+```
