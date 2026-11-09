@@ -22,6 +22,7 @@ class ApplicationTests {
 	@Autowired
 	private MockMvc mockMvc;
 
+	/** Verifies events are listed in FIFO order and can be deleted. */
 	@Test
 	void eventsAreReturnedInFifoOrderAndCanBeRemoved() throws Exception {
 		String firstId = createEvent("First event", "First description");
@@ -34,6 +35,11 @@ class ApplicationTests {
 				.andExpect(jsonPath("$[1].id").value(secondId))
 				.andExpect(jsonPath("$[1].name").value("Second event"));
 
+		mockMvc.perform(get("/api/events/{id}", secondId))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(secondId))
+				.andExpect(jsonPath("$.name").value("Second event"));
+
 		mockMvc.perform(delete("/api/events/{id}", firstId))
 				.andExpect(status().isNoContent());
 
@@ -43,8 +49,12 @@ class ApplicationTests {
 
 		mockMvc.perform(delete("/api/events/{id}", secondId))
 				.andExpect(status().isNoContent());
+
+		mockMvc.perform(get("/api/events/{id}", secondId))
+				.andExpect(status().isNotFound());
 	}
 
+	/** Verifies event titles are required while event dates are not part of creation. */
 	@Test
 	void eventTitleIsRequiredAndEventDateIsNotPartOfTheRequest() throws Exception {
 		mockMvc.perform(post("/api/events")
@@ -68,6 +78,7 @@ class ApplicationTests {
 		mockMvc.perform(delete("/api/events/{id}", id)).andExpect(status().isNoContent());
 	}
 
+	/** Posts an event and returns the ID from the created response. */
 	private String createEvent(String name, String description) throws Exception {
 		MvcResult result = mockMvc.perform(post("/api/events")
 				.contentType("application/json")
@@ -79,6 +90,7 @@ class ApplicationTests {
 		return extractId(result);
 	}
 
+	/** Extracts the created event ID from an HTTP response body. */
 	private String extractId(MvcResult result) throws Exception {
 		Matcher matcher = Pattern.compile("\"id\":\"([^\"]+)\"")
 				.matcher(result.getResponse().getContentAsString());

@@ -65,11 +65,13 @@ const eventTotal = document.querySelector('#event-total')
 const searchInput = document.querySelector('#admin-search')
 let events = []
 
+/** Displays a form status message and applies error styling when needed. */
 function setMessage(message, isError = false) {
   formMessage.textContent = message
   formMessage.classList.toggle('error', isError)
 }
 
+/** Filters and renders the admin event list and its queue counts. */
 function renderAdminEvents() {
   const query = searchInput.value.trim().toLocaleLowerCase()
   const filteredEvents = events.filter((event) =>
@@ -104,8 +106,10 @@ function renderAdminEvents() {
   }).join('')
 }
 
+// Keep the event list filtered as the administrator types.
 searchInput.addEventListener('input', renderAdminEvents)
 
+// Submits a new event to the backend and refreshes the list on success.
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
   const submitButton = form.querySelector('button[type="submit"]')
@@ -140,6 +144,7 @@ form.addEventListener('submit', async (event) => {
   }
 })
 
+// Removes the selected event and refreshes the list after deletion.
 eventsList.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-event-id]')
   if (!button) return
@@ -156,12 +161,14 @@ eventsList.addEventListener('click', async (event) => {
   }
 })
 
+/** Reloads events from the backend and updates the admin list. */
 async function refreshEvents() {
   events = await loadEvents()
   renderAdminEvents()
 }
 
 eventsList.innerHTML = '<p class="loading">Loading events…</p>'
+// Show a connection error when the initial event-list request fails.
 refreshEvents().catch((error) => {
   eventsList.innerHTML = '<p class="connection-error">Could not load events. Make sure the Java backend is running, then refresh.</p>'
   eventSummary.textContent = 'Events unavailable'

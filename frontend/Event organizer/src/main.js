@@ -55,6 +55,7 @@ const eventCount = document.querySelector('#event-count')
 const searchInput = document.querySelector('#event-search')
 let events = []
 
+/** Filters events by the search field and renders the public event queue. */
 function renderEvents() {
   const query = searchInput.value.trim().toLocaleLowerCase()
   const filteredEvents = events.filter((event) =>
@@ -91,14 +92,17 @@ function renderEvents() {
   `
 }
 
+// Re-render the queue whenever the search query changes.
 searchInput.addEventListener('input', renderEvents)
 eventsList.innerHTML = '<p class="loading">Loading events…</p>'
 
+// Display the event queue after loading it from the backend.
 loadEvents()
   .then((loadedEvents) => {
     events = loadedEvents
     renderEvents()
   })
+  // Show a user-facing error and log details if the backend request fails.
   .catch((error) => {
     eventsList.innerHTML = '<p class="connection-error">Could not load events. Make sure the Java backend is running, then refresh.</p>'
     eventCount.textContent = 'Events unavailable'

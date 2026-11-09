@@ -1,5 +1,6 @@
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/events'
 
+/** Escapes HTML-sensitive characters before a value is inserted into page markup. */
 export function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
     '&': '&amp;',
@@ -10,6 +11,7 @@ export function escapeHtml(value) {
   })[character])
 }
 
+/** Formats a date value for display, using a fallback for invalid dates. */
 export function formatDate(date, options) {
   const parsedDate = date instanceof Date
     ? date
@@ -20,6 +22,7 @@ export function formatDate(date, options) {
   return options?.timeStyle ? parsedDate.toLocaleString(undefined, options) : parsedDate.toLocaleDateString(undefined, options)
 }
 
+/** Fetches the event list and validates that the API returned an array. */
 export async function loadEvents() {
   const response = await fetch(API_URL)
   if (!response.ok) throw new Error(`Server returned ${response.status}`)
